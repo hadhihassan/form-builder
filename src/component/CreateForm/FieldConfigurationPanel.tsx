@@ -99,7 +99,8 @@ function FieldConfigurationPanel({
               </div>
             )}
 
-            {selectedField.type === "Select" || selectedField.type === 'Radio' && (
+            {(selectedField.type === "Select" ||
+              selectedField.type === "Radio") && (
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">
                   Options (comma separated)
@@ -117,139 +118,155 @@ function FieldConfigurationPanel({
                 />
               </div>
             )}
+            {!(
+              selectedField.type === "Radio" || selectedField.type === "Select" || selectedField.type === 'Checkbox' || selectedField.type === 'Date'
+            ) && (
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Validations
+                </label>
+                <div className="space-y-2">
+                  {VALIDATION_TYPES.map((validation) => {
+                    if (
+                      (validation.value === "email" || validation.value === "password") &&  (selectedField.type === 'Number')) {
+                      return null; 
+                    }
+                    return (
+                      <div key={validation.value} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id={validation.value}
+                          onClick={() => openValidationInput(validation)}
+                          checked={
+                            selectedField.validations?.some(
+                              (v) => v.type === validation.value
+                            ) || false
+                          }
+                          onChange={(e) =>
+                            handleValidationToggle(
+                              validation.value as ValidationType,
+                              e.target.checked
+                            )
+                          }
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-600 rounded bg-slate-700"
+                        />
+                        <label
+                          htmlFor={validation.value}
+                          className="ml-2 block text-sm text-slate-300"
+                        >
+                          {validation.label}
+                        </label>
+                        {isMinLength && validation.value == "minLength" && (
+                          <input
+                            type="number"
+                            className="border border-slate-600 ml-5 rounded-md w-1/3 outline-none px-2 bg-slate-700 text-white"
+                            onChange={(e) =>
+                              handleValidationInputValues(
+                                "minLength",
+                                selectedField,
+                                e
+                              )
+                            }
+                          />
+                        )}
+                        {isMaxLength && validation.value == "maxLength" && (
+                          <input
+                            onChange={(e) =>
+                              handleValidationInputValues(
+                                "maxLength",
+                                selectedField,
+                                e
+                              )
+                            }
+                            type="number"
+                            className="border border-slate-600 ml-5 rounded-md w-1/3 outline-none px-2 bg-slate-700 text-white"
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Validations
-              </label>
-              <div className="space-y-2">
-                {VALIDATION_TYPES.map((validation) => (
-                  <div key={validation.value} className="flex items-center">
+            {!(
+              selectedField.type === "Radio" || selectedField.type === "Select" || selectedField.type === "Date"
+            ) && (
+              <>
+                {/* Derived feild configure panel */}
+                <div className="pt-4 border-t border-slate-700">
+                  <div className="flex items-center">
                     <input
                       type="checkbox"
-                      id={validation.value}
-                      onClick={() => openValidationInput(validation)}
-                      checked={
-                        selectedField.validations?.some(
-                          (v) => v.type === validation.value
-                        ) || false
-                      }
-                      onChange={(e) =>
-                        handleValidationToggle(
-                          validation.value as ValidationType,
-                          e.target.checked
-                        )
-                      }
+                      id="isDerived"
+                      checked={isDerived}
+                      onChange={(e) => {
+                        setIsDerived(e.target.checked);
+                        updateField(selectedField.id, {
+                          isDerived: e.target.checked,
+                        });
+                      }}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-600 rounded bg-slate-700"
                     />
                     <label
-                      htmlFor={validation.value}
+                      htmlFor="isDerived"
                       className="ml-2 block text-sm text-slate-300"
                     >
-                      {validation.label}
+                      Derived Field
                     </label>
-                    {isMinLength && validation.value == "minLength" && (
-                      <input
-                        type="number"
-                        className="border border-slate-600 ml-5 rounded-md w-1/3 outline-none px-2 bg-slate-700 text-white"
-                        onChange={(e) =>
-                          handleValidationInputValues(
-                            "minLength",
-                            selectedField,
-                            e
-                          )
-                        }
-                      />
-                    )}
-                    {isMaxLength && validation.value == "maxLength" && (
-                      <input
-                        onChange={(e) =>
-                          handleValidationInputValues(
-                            "maxLength",
-                            selectedField,
-                            e
-                          )
-                        }
-                        type="number"
-                        className="border border-slate-600 ml-5 rounded-md w-1/3 outline-none px-2 bg-slate-700 text-white"
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-            {/* Derived feild configure panel */}
-            <div className="pt-4 border-t border-slate-700">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="isDerived"
-                  checked={isDerived}
-                  onChange={(e) => {
-                    setIsDerived(e.target.checked);
-                    updateField(selectedField.id, {
-                      isDerived: e.target.checked,
-                    });
-                  }}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-600 rounded bg-slate-700"
-                />
-                <label
-                  htmlFor="isDerived"
-                  className="ml-2 block text-sm text-slate-300"
-                >
-                  Derived Field
-                </label>
-              </div>
-
-              {isDerived && (
-                <div className="mt-3 space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">
-                      Parent Fields
-                    </label>
-                    <select
-                      multiple
-                      value={selectedField.parentFields || []}
-                      onChange={(e) => {
-                        const options = Array.from(
-                          e.target.selectedOptions,
-                          (option) => option.value
-                        );
-                        updateField(selectedField.id, {
-                          parentFields: options,
-                        });
-                      }}
-                      className="w-full px-3 py-2 border border-slate-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-slate-700 text-white"
-                    >
-                      {fields
-                        ?.filter((f) => f.id !== selectedField.id)
-                        ?.map((field) => (
-                          <option key={field.id} value={field.id}>
-                            {field.label}
-                          </option>
-                        ))}
-                    </select>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">
-                      Derivation Logic
-                    </label>
-                    <textarea
-                      value={selectedField.derivationLogic || ""}
-                      onChange={(e) =>
-                        updateField(selectedField.id, {
-                          derivationLogic: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-slate-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-slate-700 text-white"
-                      placeholder="Example: parentField1 + ' ' + parentField2"
-                      rows={3}
-                    />
-                  </div>
+                  {isDerived && (
+                    <div className="mt-3 space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1">
+                          Parent Fields
+                        </label>
+                        <select
+                          multiple
+                          value={selectedField.parentFields || []}
+                          onChange={(e) => {
+                            const options = Array.from(
+                              e.target.selectedOptions,
+                              (option) => option.value
+                            );
+                            updateField(selectedField.id, {
+                              parentFields: options,
+                            });
+                          }}
+                          className="w-full px-3 py-2 border border-slate-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-slate-700 text-white"
+                        >
+                          {fields
+                            ?.filter((f) => f.id !== selectedField.id)
+                            ?.map((field) => (
+                              <option key={field.id} value={field.id}>
+                                {field.label}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1">
+                          Derivation Logic
+                        </label>
+                        <textarea
+                          value={selectedField.derivationLogic || ""}
+                          onChange={(e) =>
+                            updateField(selectedField.id, {
+                              derivationLogic: e.target.value,
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-slate-700 text-white"
+                          placeholder="Example: parentField1 + ' ' + parentField2"
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </div>
         </div>
       ) : (
