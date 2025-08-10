@@ -16,7 +16,7 @@ export function FieldRenderer({
   touched?: boolean;
   onChange: (fieldId: string, value: unknown) => void;
 }) {
-  console.log(field)
+
   const commonLabel = (
     <label className="block text-sm font-medium text-white mb-1">
       {field.label}

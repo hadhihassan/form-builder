@@ -119,7 +119,10 @@ function FieldConfigurationPanel({
               </div>
             )}
             {!(
-              selectedField.type === "Radio" || selectedField.type === "Select" || selectedField.type === 'Checkbox' || selectedField.type === 'Date'
+              selectedField.type === "Radio" ||
+              selectedField.type === "Select" ||
+              selectedField.type === "Checkbox" ||
+              selectedField.type === "Date"
             ) && (
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -128,8 +131,11 @@ function FieldConfigurationPanel({
                 <div className="space-y-2">
                   {VALIDATION_TYPES.map((validation) => {
                     if (
-                      (validation.value === "email" || validation.value === "password") &&  (selectedField.type === 'Number')) {
-                      return null; 
+                      (validation.value === "email" ||
+                        validation.value === "password") &&
+                      selectedField.type === "Number"
+                    ) {
+                      return null;
                     }
                     return (
                       <div key={validation.value} className="flex items-center">
@@ -160,6 +166,11 @@ function FieldConfigurationPanel({
                           <input
                             type="number"
                             className="border border-slate-600 ml-5 rounded-md w-1/3 outline-none px-2 bg-slate-700 text-white"
+                            value={
+                              selectedField.validations?.find(
+                                (v) => v.type === "minLength"
+                              )?.value || ""
+                            }
                             onChange={(e) =>
                               handleValidationInputValues(
                                 "minLength",
@@ -171,6 +182,11 @@ function FieldConfigurationPanel({
                         )}
                         {isMaxLength && validation.value == "maxLength" && (
                           <input
+                            value={
+                              selectedField.validations?.find(
+                                (v) => v.type === "maxLength"
+                              )?.value || ""
+                            }
                             onChange={(e) =>
                               handleValidationInputValues(
                                 "maxLength",
@@ -190,7 +206,9 @@ function FieldConfigurationPanel({
             )}
 
             {!(
-              selectedField.type === "Radio" || selectedField.type === "Select" || selectedField.type === "Date"
+              selectedField.type === "Radio" ||
+              selectedField.type === "Select" ||
+              selectedField.type === "Date"
             ) && (
               <>
                 {/* Derived feild configure panel */}

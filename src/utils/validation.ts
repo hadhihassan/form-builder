@@ -22,13 +22,25 @@ export function validateField(field: FormField, value: string | string): string 
                     if (!trimmed) errors.push("This field must not be empty");
                     break;
                 case "minLength":
-                    if (trimmed && trimmed.length < Number(v.value)) {
-                        errors.push(`Minimum length is ${v.value}`);
+                    if (field.type === "Number") {
+                        if (value !== undefined && Number(value) < Number(v.value)) {
+                            errors.push(`Value must be at least ${v.value}`);
+                        }
+                    } else {
+                        if (trimmed && trimmed.length < Number(v.value)) {
+                            errors.push(`Minimum length is ${v.value}`);
+                        }
                     }
                     break;
                 case "maxLength":
-                    if (trimmed && trimmed.length > Number(v.value)) {
-                        errors.push(`Maximum length is ${v.value}`);
+                    if (field.type === "Number") {
+                        if (value !== undefined && Number(value) > Number(v.value)) {
+                            errors.push(`Value must be at most ${v.value}`);
+                        }
+                    } else {
+                        if (trimmed && trimmed.length > Number(v.value)) {
+                            errors.push(`Maximum length is ${v.value}`);
+                        }
                     }
                     break;
                 case "email":

@@ -131,7 +131,7 @@ function CreateForm() {
     addField(type);
     setIsMinLength(false);
     setIsMaxLength(false);
-    setIsDerived(false)
+    setIsDerived(false);
   };
 
   // Open validation input fields
@@ -193,6 +193,23 @@ function CreateForm() {
       validations: updatedValidations,
     });
   };
+
+  useEffect(() => {
+    if (selectedField?.validations) {
+      // Check if minLength validation exists
+      const hasMinLength = selectedField.validations.some(
+        (v) => v.type === "minLength"
+      );
+
+      // Check if maxLength validation exists
+      const hasMaxLength = selectedField.validations.some(
+        (v) => v.type === "maxLength"
+      );
+
+      setIsMinLength(hasMinLength);
+      setIsMaxLength(hasMaxLength);
+    }
+  }, [selectedField]);
 
   return (
     <div className="min-h-screen bg-slate-900 p-6">
