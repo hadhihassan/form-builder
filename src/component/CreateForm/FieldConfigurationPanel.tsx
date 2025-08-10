@@ -99,7 +99,7 @@ function FieldConfigurationPanel({
               </div>
             )}
 
-            {selectedField.type === "Select" && (
+            {selectedField.type === "Select" || selectedField.type === 'Radio' && (
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1">
                   Options (comma separated)
@@ -178,7 +178,7 @@ function FieldConfigurationPanel({
                 ))}
               </div>
             </div>
-
+            {/* Derived feild configure panel */}
             <div className="pt-4 border-t border-slate-700">
               <div className="flex items-center">
                 <input

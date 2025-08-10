@@ -131,6 +131,7 @@ function CreateForm() {
     addField(type);
     setIsMinLength(false);
     setIsMaxLength(false);
+    setIsDerived(false)
   };
 
   // Open validation input fields
@@ -148,9 +149,15 @@ function CreateForm() {
   ) => {
     if (!selectedField) return;
 
-    const validations = selectedField.validations || [];
+    let validations = selectedField.validations || [];
 
     if (checked) {
+      if (validationType === "email") {
+        validations = validations.filter((v) => v.type !== "password");
+      } else if (validationType === "password") {
+        validations = validations.filter((v) => v.type !== "email");
+      }
+
       updateField(selectedField.id, {
         validations: [
           ...validations,
@@ -216,6 +223,7 @@ function CreateForm() {
             selectedField={selectedField}
             moveField={moveField}
             removeField={removeField}
+            setIsDerived={setIsDerived}
           />
 
           {/* Field Configuration */}

@@ -9,6 +9,7 @@ type Props = {
   selectedField: FormField | null;
   moveField: (id: string, dir: "up" | "down") => void;
   removeField: (id: string) => void;
+  setIsDerived: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export default function FormFieldsList({
   fields,
@@ -19,6 +20,7 @@ export default function FormFieldsList({
   selectedField,
   moveField,
   removeField,
+  setIsDerived
 }: Props) {
   return (
     <div className="bg-slate-800 p-6 rounded-lg shadow-md border border-slate-700">
@@ -55,7 +57,10 @@ export default function FormFieldsList({
           {fields?.map((field, index) => (
             <div
               key={field.id}
-              onClick={() => setSelectedField(field)}
+              onClick={() => {
+                setSelectedField(field)
+                setIsDerived(field.isDerived || false)
+              }}
               className={`p-3 border rounded-md cursor-pointer transition-colors ${
                 selectedField?.id === field.id
                   ? "border-blue-500 bg-slate-700"
